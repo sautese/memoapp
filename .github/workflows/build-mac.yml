@@ -18,10 +18,17 @@ jobs:
 
       - run: npx electron-builder --mac --publish never
 
-      # 👉 推荐：直接发布到 Release（更快）
+      # 👉 自动生成 tag
+      - name: Create Tag
+        run: |
+          git tag v1.0.${{ github.run_number }}
+          git push origin v1.0.${{ github.run_number }}
+
+      # 👉 发布 Release
       - name: Upload to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: v1.0.${{ github.run_number }}
           files: dist/*.dmg
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
