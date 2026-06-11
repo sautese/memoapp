@@ -1,7 +1,7 @@
 name: Build Mac
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
 
 jobs:
   build-mac:
@@ -16,4 +16,4 @@ jobs:
 
       - run: npm install
 
-      - run: npx electron-builder --mac
+      - run: npx electron-builder --mac --publish never
