@@ -1,34 +1,35 @@
-name: Build Mac
+name: Build Mac & Release
 
 on:
   workflow_dispatch:
+
+permissions:
+  contents: write   # ⭐ 关键：允许创建 Release（解决 403）
 
 jobs:
   build-mac:
     runs-on: macos-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - run: npm install
+      - name: Install dependencies
+        run: npm install
 
-      - run: npx electron-builder --mac --publish never
+      - name: Build Electron app (macOS)
+        run: npx electron-builder --mac --publish never
 
-      # 👉 自动生成 tag
-      - name: Create Tag
-        run: |
-          git tag v1.0.${{ github.run_number }}
-          git push origin v1.0.${{ github.run_number }}
-
-      # 👉 发布 Release
-      - name: Upload to GitHub Release
+      - name: Create GitHub Release and upload dmg
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v1.0.${{ github.run_number }}
+          name: Release v1.0.${{ github.run_number }}
           files: dist/*.dmg
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
